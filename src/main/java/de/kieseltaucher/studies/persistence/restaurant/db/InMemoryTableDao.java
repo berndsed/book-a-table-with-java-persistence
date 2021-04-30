@@ -9,7 +9,7 @@ import de.kieseltaucher.studies.persistence.restaurant.model.Table;
 import de.kieseltaucher.studies.persistence.restaurant.model.TableNumber;
 import de.kieseltaucher.studies.persistence.restaurant.service.TableDAO;
 
-public class InMemoryTableDao implements TableDAO {
+class InMemoryTableDao implements TableDAO {
 
     private final Map<TableNumber, Table> tablesByNumber = new ConcurrentHashMap<>();
 
