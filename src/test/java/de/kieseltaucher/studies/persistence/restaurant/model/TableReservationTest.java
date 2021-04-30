@@ -44,7 +44,7 @@ class TableReservationTest {
     }
 
     private Table aTable() {
-        return new Table();
+        return new Table(TableNumber.of(1));
     }
 
     private ReservationRequest aReservationRequest() {
