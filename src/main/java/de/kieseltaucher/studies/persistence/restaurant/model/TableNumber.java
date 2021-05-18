@@ -14,6 +14,10 @@ public class TableNumber {
         this.number = number;
     }
 
+    public int toInt() {
+        return number;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

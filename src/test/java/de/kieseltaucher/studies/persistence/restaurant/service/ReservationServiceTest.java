@@ -5,13 +5,12 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import de.kieseltaucher.studies.persistence.restaurant.db.Database;
+import de.kieseltaucher.studies.persistence.restaurant.db.PersistenceTypes;
 import de.kieseltaucher.studies.persistence.restaurant.model.TableNumber;
 
-@ExtendWith(Database.class)
 class ReservationServiceTest {
 
     private ReservationService service;
@@ -21,12 +20,14 @@ class ReservationServiceTest {
         service = new ReservationService(tableDAO);
     }
 
-    @Test
+    @TestTemplate
+    @ExtendWith(PersistenceTypes.class)
     void noTables() {
         assertThat(service.listAllTables(), emptyString());
     }
 
-    @Test
+    @TestTemplate
+    @ExtendWith(PersistenceTypes.class)
     void createdTableIsListed(TableDAO tableDAO) {
         tableDAO.insert(TableNumber.of(1));
         assertThat(service.listAllTables(), containsString("Table 1"));

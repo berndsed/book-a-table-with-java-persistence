@@ -14,15 +14,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(Database.class)
-class DatabaseExtensionTest {
+@ExtendWith(Persistence.class)
+class PersistenceExtensionTest {
 
     private static Connection OTHER_CONNECTION;
 

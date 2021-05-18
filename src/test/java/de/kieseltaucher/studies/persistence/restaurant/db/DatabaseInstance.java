@@ -46,6 +46,7 @@ class DatabaseInstance implements ExtensionContext.Store.CloseableResource {
     private static void createSchema(Connection connection) {
         try (Statement statement = connection.createStatement()) {
             statement.execute("create table if not exists test_table (v varchar)");
+            new Schema().evolve(connection);
         } catch (SQLException e) {
             final var msg = String.format("Failed to create schema: %s", e);
             throw new IllegalStateException(msg, e);
