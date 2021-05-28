@@ -54,6 +54,9 @@ public class Persistence implements ParameterResolver {
         switch (type) {
             case JDBC:
                 return new JdbcTableDao(connectionSource);
+            case JDBC_TEMPLATE:
+                final JdbcTemplate jdbcTemplate = new JdbcTemplate(connectionSource);
+                return new JdbcTemplateTableDao(jdbcTemplate);
             case IN_MEMORY:
                 return new InMemoryTableDao();
             default:
