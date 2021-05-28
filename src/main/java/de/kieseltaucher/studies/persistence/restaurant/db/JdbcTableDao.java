@@ -23,7 +23,8 @@ class JdbcTableDao implements TableDAO {
 
     @Override
     public Table insert(TableNumber number) {
-        try (PreparedStatement insert = open().prepareStatement("insert into restaurant_table (table_number) values (?)")) {
+        try (Connection con = open();
+            PreparedStatement insert = con.prepareStatement("insert into restaurant_table (table_number) values (?)")) {
             insert.setInt(1, number.toInt());
             insert.execute();
         } catch (SQLException e) {
@@ -35,7 +36,8 @@ class JdbcTableDao implements TableDAO {
     @Override
     public Collection<Table> findAll() {
         final Set<Table> all = new HashSet<>();
-        try (PreparedStatement select = open().prepareStatement("select table_number from restaurant_table");
+        try (Connection con = open();
+            PreparedStatement select = con.prepareStatement("select table_number from restaurant_table");
              ResultSet results = select.executeQuery()) {
             while (results.next()) {
                 final int tableNumberValue = results.getInt(1);

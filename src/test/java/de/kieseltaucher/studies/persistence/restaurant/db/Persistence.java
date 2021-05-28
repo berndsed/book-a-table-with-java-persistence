@@ -45,7 +45,7 @@ public class Persistence implements ParameterResolver {
     }
 
     private TableDAO resolveTableDao(ExtensionContext extensionContext) {
-        final Supplier<Connection> connectionSource = () -> this.resolveConnection(extensionContext);
+        final Supplier<Connection> connectionSource = new TestContextConnectionSource(this.resolveConnection(extensionContext));
         return getStore(extensionContext)
             .getOrComputeIfAbsent(persistenceType, type -> newTableDao(type, connectionSource), TableDAO.class);
     }
