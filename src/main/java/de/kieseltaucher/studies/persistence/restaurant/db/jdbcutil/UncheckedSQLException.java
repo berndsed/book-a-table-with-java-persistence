@@ -1,4 +1,4 @@
-package de.kieseltaucher.studies.persistence.restaurant.db;
+package de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil;
 
 import static java.util.function.Predicate.not;
 
@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-class UncheckedSQLException extends RuntimeException {
+public class UncheckedSQLException extends RuntimeException {
 
     private static Predicate<Throwable> isSuppressed(final Throwable[] suppressed) {
         return throwable -> Arrays.stream(suppressed)
@@ -20,7 +20,7 @@ class UncheckedSQLException extends RuntimeException {
         return throwable -> suppressed.stream().anyMatch(s -> s == throwable);
     }
 
-    UncheckedSQLException(SQLException cause) {
+    public UncheckedSQLException(SQLException cause) {
         super(cause);
         addChainedExceptions(cause);
     }

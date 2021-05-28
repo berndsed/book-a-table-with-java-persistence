@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
+import de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil.JdbcTemplate;
 import de.kieseltaucher.studies.persistence.restaurant.service.TableDAO;
 
 public class Persistence implements ParameterResolver {

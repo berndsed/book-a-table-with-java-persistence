@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil.JdbcTemplate;
 import de.kieseltaucher.studies.persistence.restaurant.model.Table;
 import de.kieseltaucher.studies.persistence.restaurant.model.TableNumber;
 import de.kieseltaucher.studies.persistence.restaurant.service.TableDAO;

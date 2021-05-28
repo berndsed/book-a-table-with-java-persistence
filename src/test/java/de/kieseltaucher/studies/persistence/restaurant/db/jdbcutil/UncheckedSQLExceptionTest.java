@@ -1,4 +1,4 @@
-package de.kieseltaucher.studies.persistence.restaurant.db;
+package de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -13,6 +13,8 @@ import java.sql.Statement;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import de.kieseltaucher.studies.persistence.restaurant.db.Persistence;
 
 @ExtendWith(Persistence.class)
 class UncheckedSQLExceptionTest {
