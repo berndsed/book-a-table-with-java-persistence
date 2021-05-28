@@ -45,6 +45,17 @@ class UncheckedSQLExceptionTest {
         assertThat(unchecked.getSuppressed(), emptyArray());
     }
 
+    @Test
+    void willNotDuplicateAlreadySuppressedExceptions() {
+        final SQLException root = new SQLException("root");
+        final SQLException chainedAndSuppressed = new SQLException("Another trouble-maker");
+        root.setNextException(chainedAndSuppressed);
+        root.addSuppressed(chainedAndSuppressed);
+
+        final var unchecked = new UncheckedSQLException(root);
+        assertThat(unchecked.getSuppressed(), emptyArray());
+        assertThat(stacktraceOf(unchecked), containsString("Another trouble-maker"));
+    }
 
     private String stacktraceOf(Exception e) {
         final StringWriter writer = new StringWriter();
