@@ -2,6 +2,7 @@ package de.kieseltaucher.studies.persistence.restaurant.db;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyArray;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.PrintWriter;
@@ -37,6 +38,13 @@ class UncheckedSQLExceptionTest {
         assertThat(stackTrace, containsString("UNKNOWNTABLE2"));
 
     }
+
+    @Test
+    void noChainedException() {
+        final var unchecked = new UncheckedSQLException(new SQLException("any"));
+        assertThat(unchecked.getSuppressed(), emptyArray());
+    }
+
 
     private String stacktraceOf(Exception e) {
         final StringWriter writer = new StringWriter();
