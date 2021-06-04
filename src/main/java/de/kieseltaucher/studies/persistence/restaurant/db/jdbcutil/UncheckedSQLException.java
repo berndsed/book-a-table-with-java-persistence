@@ -28,8 +28,8 @@ public class UncheckedSQLException extends RuntimeException {
 
     private void addSuppressed(Iterator<Throwable> chained, Predicate<Throwable> relevant) {
         final Collection<Throwable> suppressedOfChained = new HashSet<>();
-        final Predicate<Throwable> notAlreadySupppresedInChained = not(isSuppressed(suppressedOfChained));
-        final Predicate<Throwable> shallAdd = relevant.and(notAlreadySupppresedInChained);
+        final Predicate<Throwable> notAlreadySuppresedInChained = not(isSuppressed(suppressedOfChained));
+        final Predicate<Throwable> shallAdd = relevant.and(notAlreadySuppresedInChained);
         while(chained.hasNext()) {
             final Throwable next = chained.next();
             suppressedOfChained.addAll(Arrays.asList(next.getSuppressed()));
