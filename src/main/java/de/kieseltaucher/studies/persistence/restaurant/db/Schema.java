@@ -8,7 +8,7 @@ class Schema {
 
     void evolve(Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute("create table if not exists restaurant_table (table_number decimal(10))");
+            statement.execute("create table if not exists restaurant_table (table_number decimal(10) not null)");
         }
     }
 }
