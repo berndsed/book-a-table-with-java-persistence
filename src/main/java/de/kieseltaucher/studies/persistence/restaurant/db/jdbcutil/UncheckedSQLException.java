@@ -11,11 +11,6 @@ import java.util.function.Predicate;
 
 public class UncheckedSQLException extends RuntimeException {
 
-    private static Predicate<Throwable> isSuppressed(final Throwable[] suppressed) {
-        return throwable -> Arrays.stream(suppressed)
-            .anyMatch(s -> s == throwable);
-    }
-
     private static Predicate<Throwable> isSuppressed(final Collection<Throwable> suppressed) {
         return throwable -> suppressed.stream().anyMatch(s -> s == throwable);
     }
@@ -27,9 +22,8 @@ public class UncheckedSQLException extends RuntimeException {
 
     private void addChainedExceptions(SQLException cause) {
         final Iterator<Throwable> chained = cause.iterator();
-        final Predicate<Throwable> notAlreadySuppressed = not(isSuppressed(getSuppressed()));
         final Predicate<Throwable> notCause = curr -> curr != cause;
-        addSuppressed(chained, notAlreadySuppressed.and(notCause));
+        addSuppressed(chained, notCause);
     }
 
     private void addSuppressed(Iterator<Throwable> chained, Predicate<Throwable> relevant) {
