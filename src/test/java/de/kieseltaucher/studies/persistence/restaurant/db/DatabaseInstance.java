@@ -56,7 +56,6 @@ class DatabaseInstance implements ExtensionContext.Store.CloseableResource {
     private final Connection connection;
 
     private DatabaseInstance(Connection connection) {
-
         this.connection = connection;
     }
 
