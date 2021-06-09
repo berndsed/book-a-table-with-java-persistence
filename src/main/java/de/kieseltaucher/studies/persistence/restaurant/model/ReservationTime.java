@@ -5,16 +5,24 @@ import static java.util.Objects.requireNonNull;
 import java.time.LocalDate;
 import java.util.Objects;
 
-class ReservationTime {
+public class ReservationTime {
 
     private final LocalDate day;
     private final Mealtime mealtime;
 
-    ReservationTime(LocalDate day, Mealtime mealtime) {
+    public ReservationTime(LocalDate day, Mealtime mealtime) {
         requireNonNull(day);
         requireNonNull(mealtime);
         this.day = day;
         this.mealtime = mealtime;
+    }
+
+    LocalDate day() {
+        return day;
+    }
+
+    Mealtime mealtime() {
+        return mealtime;
     }
 
     @Override
