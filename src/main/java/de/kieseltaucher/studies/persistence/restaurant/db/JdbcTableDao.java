@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil.UncheckedSQLException;
 import de.kieseltaucher.studies.persistence.restaurant.model.Mealtime;
@@ -54,7 +55,7 @@ class JdbcTableDao implements TableDAO {
 
     @Override
     public Collection<Table> findAll() {
-        final Map<TableNumber, Table> all = new HashMap<>();
+        final TableResultRowMapper mapper = new TableResultRowMapper();
         try (Connection con = open();
              PreparedStatement select = con.prepareStatement(
                  "select restaurant_table.table_number, at_date, mealtime " +
@@ -62,22 +63,58 @@ class JdbcTableDao implements TableDAO {
                      "left outer join reservation on restaurant_table.table_number = reservation.table_number");
              ResultSet results = select.executeQuery()) {
             while (results.next()) {
-                final int tableNumberValue = results.getInt(1);
-                final TableNumber tableNumber = TableNumber.of(tableNumberValue);
-                all.computeIfAbsent(tableNumber, Table::new);
-                final Date reservedAt = results.getDate(2);
-                if (reservedAt == null) {
-                    continue;
-                }
-                final Mealtime mealtime = Mealtime.valueOf(results.getString(3));
-                final ReservationTime reservationTime = new ReservationTime(reservedAt.toLocalDate(), mealtime);
-                final ReservationRequest reservation = new ReservationRequest(reservationTime);
-                all.get(tableNumber).reserve(reservation);
+                mapper.addRow(results);
             }
         } catch (SQLException e) {
             throw new UncheckedSQLException(e);
         }
-        return all.values();
+        return mapper.tables();
+    }
+
+    private static class TableResultRowMapper {
+
+        private final Map<TableNumber, TableBuilder> buildersByTableNumber = new HashMap<>();
+
+        void addRow(ResultSet row) throws SQLException {
+            final int tableNumberValue = row.getInt(1);
+            final TableNumber tableNumber = TableNumber.of(tableNumberValue);
+            buildersByTableNumber.computeIfAbsent(tableNumber, TableBuilder::new);
+            buildersByTableNumber.get(tableNumber).addReservation(row);
+        }
+
+        Collection<Table> tables() {
+            return buildersByTableNumber
+                .values()
+                .stream()
+                .map(TableBuilder::build)
+                .collect(Collectors.toList());
+        }
+
+    }
+
+    private static class TableBuilder {
+
+        private final Table table;
+
+        TableBuilder(TableNumber number) {
+            this.table = new Table(number);
+        }
+
+        void addReservation(ResultSet row) throws SQLException {
+            final Date reservedAt = row.getDate(2);
+            if (reservedAt == null) {
+                return;
+            }
+            final Mealtime mealtime = Mealtime.valueOf(row.getString(3));
+            final ReservationTime reservationTime = new ReservationTime(reservedAt.toLocalDate(), mealtime);
+            final ReservationRequest reservation = new ReservationRequest(reservationTime);
+            table.reserve(reservation);
+        }
+
+        Table build() {
+            return table;
+        }
+
     }
 
     private Connection open() {
