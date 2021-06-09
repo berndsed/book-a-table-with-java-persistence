@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil.JdbcTemplate;
+import de.kieseltaucher.studies.persistence.restaurant.model.ReservationRequest;
 import de.kieseltaucher.studies.persistence.restaurant.model.Table;
 import de.kieseltaucher.studies.persistence.restaurant.model.TableNumber;
 import de.kieseltaucher.studies.persistence.restaurant.service.TableDAO;
@@ -26,6 +27,10 @@ class JdbcTemplateTableDao implements TableDAO {
             "insert into restaurant_table (table_number) values (?)",
             insertStatement -> doInsert(insertStatement, number)
         );
+    }
+
+    @Override
+    public void insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
     }
 
     private Table doInsert(PreparedStatement statement, TableNumber number) throws SQLException {

@@ -1,6 +1,6 @@
 package de.kieseltaucher.studies.persistence.restaurant.model;
 
-enum Mealtime {
+public enum Mealtime {
 
     BREAKFAST,
     LUNCH,

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil.UncheckedSQLException;
+import de.kieseltaucher.studies.persistence.restaurant.model.ReservationRequest;
 import de.kieseltaucher.studies.persistence.restaurant.model.Table;
 import de.kieseltaucher.studies.persistence.restaurant.model.TableNumber;
 import de.kieseltaucher.studies.persistence.restaurant.service.TableDAO;
@@ -32,6 +33,10 @@ class JdbcTableDao implements TableDAO {
             throw new UncheckedSQLException(e);
         }
         return new Table(number);
+    }
+
+    @Override
+    public void insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
     }
 
     @Override

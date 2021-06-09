@@ -2,7 +2,7 @@ package de.kieseltaucher.studies.persistence.restaurant.model;
 
 import static java.util.Objects.requireNonNull;
 
-class ReservationRequest {
+public class ReservationRequest {
 
     private final ReservationTime at;
 

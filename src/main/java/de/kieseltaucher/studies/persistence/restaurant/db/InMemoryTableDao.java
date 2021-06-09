@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import de.kieseltaucher.studies.persistence.restaurant.model.ReservationRequest;
 import de.kieseltaucher.studies.persistence.restaurant.model.Table;
 import de.kieseltaucher.studies.persistence.restaurant.model.TableNumber;
 import de.kieseltaucher.studies.persistence.restaurant.service.TableDAO;
@@ -18,6 +19,11 @@ class InMemoryTableDao implements TableDAO {
         final Table table = new Table(number);
         tablesByNumber.put(number, table);
         return table;
+    }
+
+    @Override
+    public void insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
+        // nothing to do
     }
 
     @Override

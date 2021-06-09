@@ -15,7 +15,11 @@ public class Table {
         this.number = number;
     }
 
-    boolean reserve(ReservationRequest reservationRequest) {
+    public TableNumber getNumber() {
+        return number;
+    }
+
+    public boolean reserve(ReservationRequest reservationRequest) {
         requireNonNull(reservationRequest);
         return reservations.add(reservationRequest.at());
     }
