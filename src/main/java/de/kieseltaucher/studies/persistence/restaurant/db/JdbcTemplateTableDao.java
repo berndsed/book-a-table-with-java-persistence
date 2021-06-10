@@ -4,8 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil.JdbcTemplate;
 import de.kieseltaucher.studies.persistence.restaurant.model.ReservationRequest;
@@ -29,10 +27,6 @@ class JdbcTemplateTableDao implements TableDAO {
         );
     }
 
-    @Override
-    public void insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
-    }
-
     private Table doInsert(PreparedStatement statement, TableNumber number) throws SQLException {
         statement.setInt(1, number.toInt());
         statement.execute();
@@ -40,21 +34,36 @@ class JdbcTemplateTableDao implements TableDAO {
     }
 
     @Override
+    public void insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
+        jdbcTemplate.<Void>withPreparedStatement(
+            "insert into reservation (table_number, at_date, mealtime) values (?, ?, ?)",
+            insert -> doInsertReservation(insert, tableNumber, reservation));
+    }
+
+    private Void doInsertReservation(PreparedStatement insert, TableNumber tableNumber, ReservationRequest reservation)
+        throws SQLException {
+        insert.setInt(1, tableNumber.toInt());
+        insert.setObject(2, reservation.atDay());
+        insert.setString(3, reservation.forMealtime().name());
+        insert.execute();
+        return null;
+    }
+
+    @Override
     public Collection<Table> findAll() {
         return jdbcTemplate.withPreparedStatement(
-            "select table_number from restaurant_table",
+            "select restaurant_table.table_number, at_date, mealtime " +
+                "from restaurant_table " +
+                "left outer join reservation on restaurant_table.table_number = reservation.table_number",
             query -> jdbcTemplate.withQuery(query, this::extractTables)
         );
     }
 
-    private Set<Table> extractTables(ResultSet results) throws SQLException {
-        final Set<Table> all = new HashSet<>();
+    private Collection<Table> extractTables(ResultSet results) throws SQLException {
+        final TableResultRowMapper mapper = new TableResultRowMapper();
         while (results.next()) {
-            final int tableNumberValue = results.getInt(1);
-            final TableNumber tableNumber = TableNumber.of(tableNumberValue);
-            final Table table = new Table(tableNumber);
-            all.add(table);
+            mapper.addRow(results);
         }
-        return all;
+        return mapper.tables();
     }
 }
