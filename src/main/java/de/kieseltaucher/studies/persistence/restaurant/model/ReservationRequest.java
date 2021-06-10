@@ -13,7 +13,7 @@ public class ReservationRequest {
         this.at = at;
     }
 
-    ReservationTime at() {
+    public ReservationTime at() {
         return at;
     }
 

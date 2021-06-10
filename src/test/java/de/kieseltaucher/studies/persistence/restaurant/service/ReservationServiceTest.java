@@ -5,6 +5,17 @@ import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
@@ -66,6 +77,29 @@ class ReservationServiceTest {
         assertThat("first reservation", reservedTables(), arrayWithSize(1));
         assertThat("second reservation", reservedTables(), arrayWithSize(1));
         assertThat("third reservation", reservedTables(), arrayWithSize(0));
+    }
+
+    @TestTemplate
+    @ExtendWith(PersistenceTypes.class)
+    void onlyOneConcurrentReservationWins(TableDAO tableDAO) throws InterruptedException, TimeoutException, ExecutionException {
+        final int threads = 3;
+        final ExecutorService executor = Executors.newFixedThreadPool(threads);
+        for (int tableNo = 1; ++tableNo <= 20; ++tableNo) {
+            tableDAO.insert(TableNumber.of(tableNo));
+            final Collection<Callable<Integer>> reservationRequests = new ArrayList<>();
+            for (int iter = 0; iter < threads; ++iter) {
+                reservationRequests.add(() -> reservedTables().length);
+            }
+
+            final Collection<Future<Integer>> reservationTasks = executor.invokeAll(reservationRequests, 500, TimeUnit.MILLISECONDS);
+
+            int totalReserved = 0;
+            for (Future<Integer> task : reservationTasks) {
+                totalReserved += task.get(20, TimeUnit.MILLISECONDS);
+            }
+
+            assertEquals(1, totalReserved);
+        }
     }
 
     private String[] reservedTables() {

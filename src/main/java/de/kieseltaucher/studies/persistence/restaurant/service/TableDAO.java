@@ -10,6 +10,6 @@ public interface TableDAO {
 
     Table insert(TableNumber number);
     Collection<Table> findAll();
-    void insertReservation(TableNumber tableNumber, ReservationRequest reservation);
+    boolean insertReservation(TableNumber tableNumber, ReservationRequest reservation);
 
 }

@@ -21,8 +21,7 @@ class ReservationService {
     String reserve(ReservationRequest request) {
         final TableStringRenderer renderer = new TableStringRenderer();
         for (Table table : tableDAO.findAll()) {
-            if (table.reserve(request)) {
-                tableDAO.insertReservation(table.getNumber(), request);
+            if (table.reserve(request) && tableDAO.insertReservation(table.getNumber(), request)) {
                 renderer.add(table);
                 break;
             }

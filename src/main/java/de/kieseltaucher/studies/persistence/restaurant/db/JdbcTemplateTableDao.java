@@ -1,5 +1,7 @@
 package de.kieseltaucher.studies.persistence.restaurant.db;
 
+import static de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil.SQLStates.isIntegrityConstraintViolation;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,19 +36,26 @@ class JdbcTemplateTableDao implements TableDAO {
     }
 
     @Override
-    public void insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
-        jdbcTemplate.<Void>withPreparedStatement(
+    public boolean insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
+        return jdbcTemplate.withPreparedStatement(
             "insert into reservation (table_number, at_date, mealtime) values (?, ?, ?)",
             insert -> doInsertReservation(insert, tableNumber, reservation));
     }
 
-    private Void doInsertReservation(PreparedStatement insert, TableNumber tableNumber, ReservationRequest reservation)
+    private boolean doInsertReservation(PreparedStatement insert, TableNumber tableNumber, ReservationRequest reservation)
         throws SQLException {
         insert.setInt(1, tableNumber.toInt());
         insert.setObject(2, reservation.atDay());
         insert.setString(3, reservation.forMealtime().name());
-        insert.execute();
-        return null;
+        try {
+            insert.execute();
+        } catch (SQLException e) {
+            if (isIntegrityConstraintViolation(e)) {
+                return false;
+            }
+            throw e;
+        }
+        return true;
     }
 
     @Override

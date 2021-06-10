@@ -1,5 +1,7 @@
 package de.kieseltaucher.studies.persistence.restaurant.db;
 
+import static de.kieseltaucher.studies.persistence.restaurant.db.jdbcutil.SQLStates.isIntegrityConstraintViolation;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,7 +36,7 @@ class JdbcTableDao implements TableDAO {
     }
 
     @Override
-    public void insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
+    public boolean insertReservation(TableNumber tableNumber, ReservationRequest reservation) {
         try (Connection con = open();
              PreparedStatement insert = con.prepareStatement(
                  "insert into reservation (table_number, at_date, mealtime) values (?, ?, ?)")) {
@@ -43,8 +45,12 @@ class JdbcTableDao implements TableDAO {
             insert.setString(3, reservation.forMealtime().name());
             insert.execute();
         } catch (SQLException e) {
+            if (isIntegrityConstraintViolation(e)) {
+                return false;
+            }
             throw new UncheckedSQLException(e);
         }
+        return true;
     }
 
     @Override
