@@ -24,6 +24,7 @@ class ReservationService {
             if (table.reserve(request)) {
                 tableDAO.insertReservation(table.getNumber(), request);
                 renderer.add(table);
+                break;
             }
         }
         return renderer.toString();

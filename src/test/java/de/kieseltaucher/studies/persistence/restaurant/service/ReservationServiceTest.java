@@ -1,6 +1,7 @@
 package de.kieseltaucher.studies.persistence.restaurant.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
@@ -18,6 +19,9 @@ import de.kieseltaucher.studies.persistence.restaurant.model.TableNumber;
 class ReservationServiceTest {
 
     private ReservationService service;
+    private final ReservationRequestBuilder requestBuilder = new ReservationRequestBuilder()
+        .withDayOfMonth(1)
+        .withMealtime(Mealtime.BREAKFAST);
 
     @BeforeEach
     void setUp(TableDAO tableDAO) {
@@ -41,8 +45,6 @@ class ReservationServiceTest {
     @ExtendWith(PersistenceTypes.class)
     void tableCanBeReserved(TableDAO tableDAO) {
         tableDAO.insert(TableNumber.of(1));
-        final ReservationRequestBuilder requestBuilder = new ReservationRequestBuilder().withDayOfMonth(1)
-            .withMealtime(Mealtime.BREAKFAST);
         final ReservationRequest breakfastReservation = requestBuilder.build();
         final ReservationRequest lunchtimeReservation = requestBuilder.withMealtime(Mealtime.LUNCH).build();
 
@@ -54,4 +56,19 @@ class ReservationServiceTest {
                    service.reserve(lunchtimeReservation), containsString("Table 1"));
     }
 
+    @TestTemplate
+    @ExtendWith(PersistenceTypes.class)
+    void onlyOneTableIsReserved(TableDAO tableDAO) {
+        tableDAO.insert(TableNumber.of(1));
+        tableDAO.insert(TableNumber.of(2));
+
+        assertThat("first reservation", reservedTables(), arrayWithSize(1));
+        assertThat("second reservation", reservedTables(), arrayWithSize(1));
+        assertThat("third reservation", reservedTables(), arrayWithSize(0));
+    }
+
+    private String[] reservedTables() {
+        final String reservations = service.reserve(requestBuilder.build());
+        return reservations.isEmpty() ? new String[0] : reservations.split("\n");
+    }
 }
