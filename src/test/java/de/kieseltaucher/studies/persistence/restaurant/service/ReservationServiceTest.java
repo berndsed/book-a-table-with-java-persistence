@@ -32,6 +32,7 @@ class ReservationServiceTest {
     @ExtendWith(PersistenceTypes.class)
     void noTables() {
         assertThat(service.listAllTables(), emptyString());
+        assertThat(reservedTables(), arrayWithSize(0));
     }
 
     @TestTemplate
